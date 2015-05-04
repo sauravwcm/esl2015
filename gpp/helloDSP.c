@@ -47,7 +47,7 @@ extern "C"
 #define NUMMSGINPOOL2   2
 #define NUMMSGINPOOL3   4
 
-#define SIZE	16
+#define SIZE	4
 
 
 //load mat function prototype
@@ -331,7 +331,9 @@ void loadMat(ControlMsg **msg)
 		
 		if(msg->flag==1)
 		{
-			SYSTEM_1Print("Mul DONE: %d\n",  msg->flag);
+			
+			SYSTEM_1Print("Mul DONE: %d\n",  msg->prod[3][3]);
+			
 				
 		}
 		            /* If the message received is the final one, free it. */
@@ -352,7 +354,7 @@ void loadMat(ControlMsg **msg)
 		{
 			for(k=0;k<SIZE;k++)
 			{
-				msg->mat1[j][k]=j*k*2;
+				msg->mat1[j][k]=j+k*2;
 				msg->mat2[j][k]=j+k*3;
 			}
 		}
