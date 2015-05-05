@@ -48,7 +48,7 @@ extern "C" {
 /* Control message data structure. */
 /* Must contain a reserved space for the header */
 
-#define SIZE 4
+#define SIZE 64
 typedef struct ControlMsg 
 {
     MSGQ_MsgHeader header;

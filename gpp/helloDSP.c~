@@ -332,7 +332,7 @@ void loadMat(ControlMsg **msg)
 		if(msg->flag==1)
 		{
 			
-			SYSTEM_1Print("Mul DONE: %d\n",  msg->prod[0][0]);
+			SYSTEM_1Print("Mul DONE: %d\n",  msg->prod[3][3]);
 			
 				
 		}
