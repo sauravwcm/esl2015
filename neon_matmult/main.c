@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "arm_neon.h"
-#define ROW 3
-#define COL 3
 
+#define ROW1 2
+#define COL1 4
+#define ROW2 4
+#define COL2 3
 
 void add3 (uint8x16_t *data1, uint8x16_t *data2)
 {
@@ -12,21 +14,22 @@ void add3 (uint8x16_t *data1, uint8x16_t *data2)
     * Remark: a 'q' suffix to intrinsics indicates
     * the instruction run for 128 bits registers.
     */
-   // uint8x16_t three = vmovq_n_u8 (3);
+    //uint8xCOL2_t zero = vmovq_n_u8 (3);
    
     /* Add 3 to the value given in argument. */
-    *data1 = vaddq_u8 (*data1, *data2);
+    *data2 = vaddq_u8 (*data1, *data2);
+
 }
 
 void print_uint8 (uint8x16_t data, char* name)
 {
     int i;
-    static uint8_t p[COL];
+    static uint8_t p[COL2];
 
     vst1q_u8 (p, data);
 
     printf ("%s = ", name);
-    for (i = 0; i < COL; i++)
+    for (i = 0; i < COL2; i++)
     {
         printf ("%02d ", p[i]);
     }
@@ -34,23 +37,27 @@ void print_uint8 (uint8x16_t data, char* name)
 }
 
 int main ()
-{
-    /* Create custom arbitrary data. */
-   	uint8_t row1[COL];
-	uint8_t row2[COL];
-    
-	const uint8_t mat1[ROW][COL] = { {1, 2, 3}, {2, 4, 6}, {1, 2, 3}};
-	const uint8_t mat2[ROW][COL] = { {1, 1, 2}, {1, 2, 1}, {2, 1, 1}};
-	int res[ROW*COL][COL];
-	
-	int r=0, c=0, i=0;
+{	int r=0, c=0, i=0;
 	int k=0, l=0;
 
-	for(r=0; r<ROW; r++)
+    /* Create custom arbitrary data. */
+   	uint8_t row1[COL2];
+	uint8_t row2[COL2];
+    	for(i=0; i<COL2; i++)
+	{	
+		row1[i] = 0;
+		row2[i] = 0;
+	}
+	const uint8_t mat1[ROW1][COL1] = { {1, 1, 1, 1}, {2, 2, 2, 2}};
+	const uint8_t mat2[ROW2][COL2] = { {1, 1, 2}, {2, 1, 2}, {3, 1, 2}, {4, 1, 2}};
+	int res[ROW1*ROW2][COL2];
+	int Mat_Res[ROW1][COL2];
+
+	for(r=0; r<ROW1; r++)
 		{
-			for(c=0; c<COL; c++)
+			for(c=0; c<COL1; c++)
 		     	{
-				for(l=0; l<COL; l++)
+				for(l=0; l<COL2; l++)
 			 	{
 					res[k][l] = mat1[r][c]	* mat2[c][l];
 				}
@@ -58,9 +65,9 @@ int main ()
 			}
 		}
 	
-	for(r=0; r<ROW*COL;r++)
+	for(r=0; r<ROW1*ROW2;r++)
 	{
-		for(c=0;c<COL;c++)
+		for(c=0;c<COL2;c++)
 		{
 			printf("%d ", res[r][c]);
     		}
@@ -69,9 +76,42 @@ int main ()
 	
         printf("\n\n\n\n\n");
  	uint8x16_t data1, data2;
+	
+	for(i=0; i<ROW1; i++)
+	{	data2 = vld1q_u8 (row2);	
+		for(r=0; r<ROW2; r++)
+		{	
+			
+			for(l=0; l<COL2; l++)
+			{
+				row1[l] = res[r+(ROW2*i)][l];
+			}
+			data1 = vld1q_u8 (row1);
+			//print_uint8 (data1, "data1 \n");
+			add3(&data1, &data2);
+			//printf("\n \n \n \n");
+			//print_uint8 (data2, "data2 \n");
+		}
+		vst1q_u8 (row1, data2);
+		for(c=0; c<COL2; c++)
+		{
+			Mat_Res[i][c] = row1[c];
+		}
 
-	for(r=3;r<=k;r= r+ROW)
-	{	for(i=0; i<COL; i++)
+		//print_uint8 (data2, "data \n");
+	}
+	printf("Result Matrix \n \n");
+	for(r=0; r<ROW1; r++)
+	{
+		for(c=0; c<COL2; c++)
+		{
+			printf("%d ", Mat_Res[r][c]);
+		}
+		printf("\n");
+	}
+	
+/*	for(r=ROW2;r<=k;r= r+ROW2)
+	{	for(i=0; i<COL2; i++)
 		{
 			row1[i] = res[r-3][i];
 			row2[i] = res[r-2][i];
@@ -82,7 +122,7 @@ int main ()
 		data1 = vld1q_u8 (row1);
     		data2 = vld1q_u8 (row2);
     		add3(&data1, &data2);
-    		for(i=0; i<COL; i++)
+    		for(i=0; i<COL2; i++)
 		{
 			row2[i] = res[r-1][i];
 			
@@ -91,5 +131,6 @@ int main ()
 		add3(&data1, &data2);
     		print_uint8 (data1, "data \n");
     	}
+*/
     return 0;
 }
