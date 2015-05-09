@@ -1,7 +1,7 @@
 BEAGLE_DIR=/home/root/esLAB/neonTest
 CC=/data/usr/local/share/codesourcery/bin/arm-none-linux-gnueabi-gcc
 #CC=gcc
-CFLAGS=-O3 -mcpu=cortex-a8 -mfloat-abi=softfp -mfpu=neon
+CFLAGS=-O3 -mcpu=cortex-a8 -mfloat-abi=softfp -mfpu=neon -g
 LDFLAGS=-lm 
 OBJS=main.o
 EXEC=exec
